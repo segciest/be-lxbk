@@ -2,17 +2,19 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY package*.json yarn.lock ./
 
-RUN yarn install --frozen-lockfile
+RUN yarn config set network-timeout 3000000
+
+RUN yarn install  
 
 COPY prisma ./prisma/
 RUN yarn prisma generate
 
 COPY . .
 
-RUN yarn build
+RUN yarn run build
 
-EXPOSE 3000
+EXPOSE 8080
 
 CMD ["yarn", "start:prod"]
