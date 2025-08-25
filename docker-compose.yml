@@ -4,7 +4,7 @@ services:
     container_name: nest_api
     restart: always
     ports:
-      - "4000:4000"
+      - "8080:8080"
     env_file:
       - .env
     depends_on:
