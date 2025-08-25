@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+ 
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model course {
+  course_id      Int             @id @default(autoincrement())
+  course_type_id Int
+  title          String          @db.VarChar(255)
+  content        String          @db.Text
+  created_at     DateTime?       @default(now()) @db.DateTime(0)
+  course_type    course_type     @relation(fields: [course_type_id], references: [type_id], onDelete: NoAction, onUpdate: NoAction, map: "course_ibfk_1")
+  course_images  course_images[]
+
+  @@index([course_type_id], map: "course_type_id")
+}
+
+model course_images {
+  img_id      Int       @id @default(autoincrement())
+  course_id   Int
+  img_type_id Int
+  img_url     String    @db.VarChar(500)
+  alt_text    String?   @default("") @db.VarChar(255)
+  uploaded_at DateTime? @default(now()) @db.DateTime(0)
+  course      course    @relation(fields: [course_id], references: [course_id], onDelete: Cascade, onUpdate: NoAction, map: "course_images_ibfk_1")
+  img_type    img_type  @relation(fields: [img_type_id], references: [type_id], onDelete: NoAction, onUpdate: NoAction, map: "course_images_ibfk_2")
+
+  @@index([course_id], map: "course_id")
+  @@index([img_type_id], map: "img_type_id")
+}
+
+model course_type {
+  type_id     Int      @id @default(autoincrement())
+  type_name   String   @unique(map: "type_name") @db.VarChar(10)
+  description String?  @default("") @db.VarChar(255)
+  course      course[]
+}
+
+model img_type {
+  type_id       Int             @id @default(autoincrement())
+  type_name     String          @unique(map: "type_name") @db.VarChar(50)
+  description   String?         @default("") @db.VarChar(255)
+  course_images course_images[]
+  index_img     index_img[]
+  tin_tuc_img   tin_tuc_img[]
+}
+
+model index_img {
+  img_id      Int       @id @default(autoincrement())
+  type_id     Int
+  img_url     String    @db.VarChar(500)
+  alt_text    String?   @default("") @db.VarChar(255)
+  uploaded_at DateTime? @default(now()) @db.DateTime(0)
+  img_type    img_type  @relation(fields: [type_id], references: [type_id], onDelete: NoAction, onUpdate: NoAction, map: "index_img_ibfk_1")
+
+  @@index([type_id], map: "type_id")
+}
+
+model news_type {
+  type_id     Int       @id @default(autoincrement())
+  type_name   String    @unique(map: "type_name") @db.VarChar(100)
+  description String?   @db.VarChar(255)
+  tin_tuc     tin_tuc[]
+}
+
+model tin_tuc {
+  tin_tuc_id  Int           @id @default(autoincrement())
+  type_id     Int
+  tieu_de     String        @db.VarChar(255)
+  noi_dung    String        @db.Text
+  uploaded_at DateTime?     @default(now()) @db.DateTime(0)
+  news_type   news_type     @relation(fields: [type_id], references: [type_id], onDelete: NoAction, onUpdate: NoAction, map: "tin_tuc_ibfk_1")
+  tin_tuc_img tin_tuc_img[]
+
+  @@index([type_id], map: "type_id")
+}
+
+model tin_tuc_img {
+  img_id      Int       @id @default(autoincrement())
+  tin_tuc_id  Int
+  img_type_id Int
+  img_url     String    @db.VarChar(500)
+  alt_text    String?   @default("") @db.VarChar(255)
+  uploaded_at DateTime? @default(now()) @db.DateTime(0)
+  tin_tuc     tin_tuc   @relation(fields: [tin_tuc_id], references: [tin_tuc_id], onDelete: Cascade, onUpdate: NoAction, map: "tin_tuc_img_ibfk_1")
+  img_type    img_type  @relation(fields: [img_type_id], references: [type_id], onDelete: NoAction, onUpdate: NoAction, map: "tin_tuc_img_ibfk_2")
+
+  @@index([img_type_id], map: "img_type_id")
+  @@index([tin_tuc_id], map: "tin_tuc_id")
+}
