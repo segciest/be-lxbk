@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, UploadedFiles, Req, Res, UseGuards, HttpCode } from '@nestjs/common';
+import { Controller, Get, Put, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, UploadedFiles, Req, Res, UseGuards, HttpCode, Query } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
@@ -14,6 +14,8 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller('news')
 export class NewsController {
   constructor(private readonly newsService: NewsService) {}
+
+
 
   @Post()
   create(@Body() createNewsDto: CreateNewsDto) {
@@ -41,6 +43,20 @@ export class NewsController {
   finyByTypeSatHach(){
     return this.newsService.findByType(7);
   }
+
+  @Put(':id')
+  async updateTinTuc(
+    @Param('id') id: string,
+    @Body() body: { tieu_de?: string; noi_dung?: string; uploaded_at?: string },
+  ) {
+    return this.newsService.updateNews(Number(id), {
+      ...body,
+      uploaded_at: body.uploaded_at ? new Date(body.uploaded_at) : undefined,
+    });
+  }
+
+
+
 
 
 

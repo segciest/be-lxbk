@@ -1,4 +1,4 @@
-import { Controller, HttpException, Post } from '@nestjs/common';
+import { Body, Controller, HttpException, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -10,16 +10,33 @@ export class UserController {
   ) {}
 
   @Post("/login")
-  login(){
+  async login(
+    @Body() body
+  ){
 
     try {
-      let token = this.jwtService.sign(
-      {data:"abc"},
-      {algorithm:"HS256", expiresIn:"5d", secret:"BI_MAT"},
-    )
-    return token;
+      let {email,password} = body
+      let checkUser = await this.userService.findUserOne(email)
+      console.log(password);
+      console.log(checkUser?.password);
+      if(checkUser){
+        if(password == checkUser.password){
+          let token = this.jwtService.sign(
+          {data:checkUser.email},
+          {algorithm:"HS256", expiresIn:"7d", secret:"BI_MAT"},
+          )
+          return { access_token: token }
+        }
+        else{
+          throw new HttpException("Sai mat khau",403)
+        }
+        
+      } else {
+        throw new HttpException("Khong tim thay user",403)
+      }
+      
     } catch (error) {
-      throw new error
+      throw error
       // throw new HttpException("Loi dang nhap",403)
     }
     

@@ -31,6 +31,19 @@ export class NewsService {
       }
     })
   }
+  // tin-tuc.service.ts
+  async updateNews(id: number, data: { tieu_de?: string; noi_dung?: string; uploaded_at?: Date }) {
+    return this.prisma.tin_tuc.update({
+      where: { tin_tuc_id: id },
+      data,
+    });
+  }
+
+
+
+
+
+
   // Lay tat ca loai tin tuc
   findAllNewsType(){
     return this.prisma.news_type.findMany();

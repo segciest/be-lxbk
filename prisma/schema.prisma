@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
- 
 }
 
 datasource db {
@@ -92,4 +91,24 @@ model tin_tuc_img {
 
   @@index([img_type_id], map: "img_type_id")
   @@index([tin_tuc_id], map: "tin_tuc_id")
+}
+
+model user {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique(map: "username") @db.VarChar(100)
+  password     String    @db.VarChar(255)
+  email        String?   @unique(map: "email") @db.VarChar(100)
+  full_name    String?   @db.VarChar(100)
+  user_type_id Int
+  created_at   DateTime? @default(now()) @db.Timestamp(0)
+  updated_at   DateTime? @default(now()) @db.Timestamp(0)
+  user_type    user_type @relation(fields: [user_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_ibfk_1")
+
+  @@index([user_type_id], map: "user_type_id")
+}
+
+model user_type {
+  id   Int    @id @default(autoincrement())
+  name String @unique(map: "name") @db.VarChar(50)
+  user user[]
 }
